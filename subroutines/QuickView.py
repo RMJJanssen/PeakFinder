@@ -4,6 +4,16 @@ import matplotlib.pyplot as plt
 
 """ This module contains functions which allows you to quickly make graphs to inspect your data"""
 
+def GetFrequencyRange(Freq,Fc=-1,HalfWidth=-1):
+    """This function returns a true/false vector that can be used on index Freq.
+    The vector will be true if Freq is in the range [Fc-HalfWidth,Fc+HalfWidth]"""
+    
+    FrangeIdx = np.empty((len(Freq),2),dtype=bool)
+    FrangeIdx[:,0] = Freq >= Fc - HalfWidth
+    FrangeIdx[:,1] = Freq < Fc + HalfWidth
+    
+    return np.all(FrangeIdx,axis=1)
+
 def PlotPeak(Freq,S21,Fc=-1,HalfWidth=-1):
     """This function plots the magnitude as a function of frequency. 
     A central frequency and width (in frequency space) can be defined such that only part of the data is plotted.
@@ -19,10 +29,8 @@ def PlotPeak(Freq,S21,Fc=-1,HalfWidth=-1):
     """
     
     if (Fc>0) and (HalfWidth>0):
-        FrangeIdx = np.empty((len(Freq),2),dtype=bool)
-        FrangeIdx[:,0] = Freq >= Fc - HalfWidth
-        FrangeIdx[:,1] = Freq < Fc + HalfWidth
-        plt.plot(Freq[np.all(FrangeIdx,axis=1)],S21[np.all(FrangeIdx,axis=1)],'b.')
+        FrangeIdx = GetFrequencyRange(Freq,Fc=Fc,HalfWidth=HalfWidth)
+        plt.plot(Freq[FrangeIdx],S21[FrangeIdx],'b.')
         plt.show()
     else:
         plt.plot(Freq,S21,'b.')
